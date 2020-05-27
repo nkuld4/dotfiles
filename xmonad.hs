@@ -56,9 +56,10 @@ myWindows                 = gets $ Just . show . length . W.integrate' . W.stack
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm                                , xK_Return          ), spawn $ XMonad.terminal conf) -- launch terminal
-    , ((modm                                , xK_Menu            ), spawn "dmenu_run -b -fn 'Source Code Pro-9' -nb '#000000' -nf '#00ff00' -sb '#00ff00' -sf '#000000'") -- launch dmenu
-    , ((0                                   , xK_Menu            ), spawn "rofi -show drun -theme /home/kriket/.config/rofi/grid.rasi") -- launch rofi
+    , ((modm .|. controlMask                , xK_equal           ), spawn "dmenu_run -b -fn 'Source Code Pro-9' -nb '#000000' -nf '#00ff00' -sb '#00ff00' -sf '#000000'") -- launch dmenu
+    , ((modm                                , xK_equal           ), spawn "rofi -show drun -theme /home/kriket/.config/rofi/grid.rasi") -- launch rofi
     , ((modm .|. controlMask                , xK_BackSpace       ), kill) -- kill window
+    , ((modm                                , xK_grave           ), kill)
     , ((modm                                , xK_space           ), sendMessage NextLayout) -- cycle layouts
     , ((modm .|. shiftMask                  , xK_space           ), setLayout $ XMonad.layoutHook conf) -- reset layouts
     , ((modm                                , xK_o               ), refresh) -- snap windows to default size
@@ -211,7 +212,7 @@ main = do
         { manageHook  = manageDocks <+> ( isFullscreen --> doFullFloat ) <+> myManageHook
         , logHook     = let noScratchpad ws = if ws == "NSP" then "" else ws
                             pp = xmobarPP { ppOutput          = hPutStrLn xmproc
-                                          , ppCurrent         = xmobarColor "green" ""  . wrap "(" ")"
+                                          , ppCurrent         = xmobarColor "grey" ""  . wrap "<fc=#00ff00>(</fc>" "<fc=#00ff00>)</fc>"
                                           , ppHidden          = xmobarColor "#00aa00" "" . noScratchpad
                                           , ppHiddenNoWindows = xmobarColor "grey" "" . noScratchpad
                                           , ppTitle           = xmobarColor "green"  "" . shorten 65
