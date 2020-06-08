@@ -14,7 +14,6 @@ import XMonad.Util.EZConfig
 import XMonad.Hooks.ManageDocks 
 import XMonad.Hooks.DynamicLog 
 import XMonad.Hooks.ManageHelpers
-import XMonad.Hooks.FadeInactive
 import XMonad.Hooks.SetWMName
 import XMonad.Actions.CycleWS
 import XMonad.Actions.CycleRecentWS
@@ -39,7 +38,7 @@ import qualified Data.Map        as M
 
 
 myTerminal                = "termite"
-myFileManager             = "pcmanfm"
+myFileManager             = "thunar"
 myPulse                   = "pavucontrol"
 myCalculator              = "galculator"
 myFocusFollowsMouse       = False
@@ -57,9 +56,10 @@ myWindows                 = gets $ Just . show . length . W.integrate' . W.stack
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm                                , xK_Return          ), spawn $ XMonad.terminal conf) -- launch terminal
-    , ((modm                                , xK_Menu            ), spawn "dmenu_run -b -fn 'Source Code Pro-9' -nb '#000000' -nf '#00ff00' -sb '#00ff00' -sf '#000000'") -- launch dmenu
-    , ((0                                   , xK_Menu            ), spawn "rofi -show drun -theme /home/kriket/.config/rofi/grid.rasi") -- launch rofi
+    , ((modm .|. controlMask                , xK_equal           ), spawn "dmenu_run -b -fn 'Source Code Pro-9' -nb '#000000' -nf '#00ff00' -sb '#00ff00' -sf '#000000'") -- launch dmenu
+    , ((modm                                , xK_equal           ), spawn "rofi -show drun -theme /home/kriket/.config/rofi/grid.rasi") -- launch rofi
     , ((modm .|. controlMask                , xK_BackSpace       ), kill) -- kill window
+    , ((modm                                , xK_grave           ), kill)
     , ((modm                                , xK_space           ), sendMessage NextLayout) -- cycle layouts
     , ((modm .|. shiftMask                  , xK_space           ), setLayout $ XMonad.layoutHook conf) -- reset layouts
     , ((modm                                , xK_o               ), refresh) -- snap windows to default size
@@ -100,8 +100,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- cmus controls
     , ((modm .|. shiftMask                  , xK_Home            ), spawn "cmus-remote -u")
-    , ((modm .|. shiftMask                  , xK_Page_Up         ), spawn "cmus-remote -n")
-    , ((modm .|. shiftMask                  , xK_Page_Down       ), spawn "cmus-remote -r")
+    , ((modm .|. shiftMask                  , xK_Page_Down         ), spawn "cmus-remote -n")
+    , ((modm .|. shiftMask                  , xK_Page_Up       ), spawn "cmus-remote -r")
     , ((modm .|. shiftMask                  , xK_End             ), spawn "cmus-remote -s") 
     , ((modm .|. shiftMask                  , xK_period          ), spawn "cmus-remote -k +10")
     , ((modm .|. shiftMask                  , xK_comma           ), spawn "cmus-remote -k -10")
@@ -156,7 +156,7 @@ myWSLayouts = onWorkspace "1" myLayout1 $
               onWorkspace "2" myLayout0 $
               onWorkspace "3" myLayout2 $
               onWorkspace "4" myLayout0 $
-              onWorkspace "9" myLayout0 $
+              onWorkspace "7" myLayout0 $
               myLayout2
 
 myLayout    = avoidStruts $ smartBorders $ boringWindows $ myWSLayouts
@@ -212,7 +212,7 @@ main = do
         { manageHook  = manageDocks <+> ( isFullscreen --> doFullFloat ) <+> myManageHook
         , logHook     = let noScratchpad ws = if ws == "NSP" then "" else ws
                             pp = xmobarPP { ppOutput          = hPutStrLn xmproc
-                                          , ppCurrent         = xmobarColor "green" ""  . wrap "(" ")"
+                                          , ppCurrent         = xmobarColor "grey" ""  . wrap "<fc=#00ff00>(</fc>" "<fc=#00ff00>)</fc>"
                                           , ppHidden          = xmobarColor "#00aa00" "" . noScratchpad
                                           , ppHiddenNoWindows = xmobarColor "grey" "" . noScratchpad
                                           , ppTitle           = xmobarColor "green"  "" . shorten 65
@@ -282,7 +282,7 @@ myScratchPads = [ NS "bigterminal"     spawnBigTerm idBigTerm createBigTerm
                          t = 0.95 -h
                          l = 0.95 -w
     spawnFM            = myFileManager
-    idFM               = resource =? "pcmanfm"
+    idFM               = resource =? "thunar"
     createFM           = customFloating $ W.RationalRect l t w h 
                          where
                          h = 0.5
